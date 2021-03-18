@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  yii-rest-api
+  
+  Sample SAM Template for yii-rest-api
+
+Globals:
+  Function:
+    Timeout: 28
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello-api/
+      Handler: web/index.php
+      Runtime: provided.al2
+      MemorySize: 2084
+      Tracing: Active
+      Layers:
+        - arn:aws:lambda:ap-southeast-1:209497400698:layer:php-74-fpm:18
+        - arn:aws:lambda:ap-southeast-1:403367587399:layer:redis-php-74:15
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+        CatchAll:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          DOCUMENT_ROOT: /var/task/web
+          DSN: 'mysql:host=democluster.cluster-cbfbcmhl11xn.ap-southeast-1.rds.amazonaws.com;dbname=dev'
+          DB_USERNAME: admin
+          DB_PASSWORD: 1qaz2wsx#EDC
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-4daacf34
+        SubnetIds:
+          - subnet-02a9bcf483e6cdbdf
+          - subnet-00aa2674387589db1
+          - subnet-08877b5d9d55382d8
+    Metadata:
+      BuildMethod: makefile
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloWorldAPI:
+    Description: "API Gateway endpoint URL for Prod environment for First Function"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  HelloWorldFunction:
+    Description: "First Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
