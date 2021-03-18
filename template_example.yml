@@ -19,8 +19,8 @@ Resources:
       MemorySize: 2084
       Tracing: Active
       Layers:
-        - arn:aws:lambda:ap-southeast-1:209497400698:layer:php-74-fpm:18
-        - arn:aws:lambda:ap-southeast-1:403367587399:layer:redis-php-74:15
+        - !Sub "arn:aws:lambda:${AWS::Region}:209497400698:layer:php-74-fpm:18"
+        - !Sub "arn:aws:lambda:${AWS::Region}:403367587399:layer:redis-php-74:15"
       Events:
         Root:
           Type: HttpApi
@@ -54,7 +54,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   HelloWorldAPI:
     Description: "API Gateway endpoint URL for Prod environment for First Function"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/customers"
   HelloWorldFunction:
     Description: "First Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
